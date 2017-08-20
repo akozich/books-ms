@@ -1,10 +1,11 @@
 package com.technologyconversations.api
 
-import org.specs2.mutable.Specification
+import org.scalatest.{Matchers, WordSpec}
+
 import scalaj.http._
 import scala.util.Properties._
 
-class ServiceInteg extends Specification {
+class ServiceInteg extends WordSpec with Matchers {
 
   val domain = envOrElse("DOMAIN", "http://localhost:8080")
   val uri = s"$domain/api/v1/books"
@@ -13,7 +14,7 @@ class ServiceInteg extends Specification {
 
     "return OK" in {
       val response: HttpResponse[String] = Http(uri).asString
-      response.code must equalTo(200)
+      response.code shouldEqual 200
     }
 
   }

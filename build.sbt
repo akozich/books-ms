@@ -1,26 +1,29 @@
-name := "books-ms"
+lazy val akkaHttpVersion      = "10.0.9"
+lazy val akkaVersion          = "2.5.4"
+lazy val mongoDBCasbahVersion = "3.1.1"
+lazy val scalajHttpVersion    = "2.3.0"
+lazy val scalaTestVersion     = "3.0.1"
+lazy val salatVersion         = "1.11.2"
 
-version := "1.0"
+lazy val root = (project in file(".")).
+  settings(
+    inThisBuild(List(
+      organization    := "com.technologyconversations.api",
+      scalaVersion    := "2.12.3",
+      version         := "1.0"
+    )),
+    name := "books-ms",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
 
-resolvers += "spray" at "http://repo.spray.io/"
+      "org.mongodb" %% "casbah" % mongoDBCasbahVersion,
 
-libraryDependencies ++= {
-  val akkaV = "2.3.0"
-  val sprayV = "1.3.1"
-  val specs2V = "2.3.12"
-  Seq(
-    "io.spray"                  %   "spray-can"       % sprayV,
-    "io.spray"                  %   "spray-routing"   % sprayV,
-    "io.spray"                  %%  "spray-json"      % "1.2.6",
-    "com.typesafe.akka"         %%  "akka-actor"      % akkaV,
-    "org.mongodb"               %%  "casbah"          % "2.7.2",
-    "com.novus"                 %%  "salat"           % "1.9.8",
-    "org.slf4j"                 %   "slf4j-api"       % "1.7.7",
-    "ch.qos.logback"            %   "logback-classic" % "1.0.3",
-    "io.spray"                  %   "spray-testkit"   % sprayV    % "test",
-    "org.specs2"                %%  "specs2-core"     % specs2V   % "test",
-    "org.scalaj"                %%  "scalaj-http"     % "1.1.4"
+      "com.github.salat" %% "salat" % salatVersion,
+
+
+      "org.scalatest"     %% "scalatest"         % scalaTestVersion  % Test,
+      "org.scalaj"        %% "scalaj-http"       % scalajHttpVersion % Test,
+      "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion   % Test
+    )
   )
-}
-
-test in assembly := {}

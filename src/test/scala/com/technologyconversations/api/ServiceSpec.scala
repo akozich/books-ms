@@ -3,22 +3,20 @@ package com.technologyconversations.api
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat._
-import com.novus.salat.global._
-import org.specs2.mutable.Specification
-import org.specs2.specification.BeforeExample
-import spray.http.{ContentType, HttpEntity}
-import spray.http.MediaTypes._
-import spray.routing.HttpService
-import spray.testkit.Specs2RouteTest
-import spray.http.StatusCodes._
-import spray.json._
-import DefaultJsonProtocol._
-import spray.httpx.SprayJsonSupport._
+import org.scalatest.{Matchers, WordSpec}
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import akka.http.scaladsl.server._
+import salat._
+import salat.global._
+import Directives._
+import akka.testkit.TestProbe
 
-import spray.httpx.SprayJsonSupport._
-
-class ServiceSpec extends Specification with Specs2RouteTest with HttpService with ServiceRoute with StaticRoute with BeforeExample {
+class ServiceSpec extends WordSpec 
+  with Matchers 
+  with ScalatestRouteTest
+  with StaticRoute
+  with BookRoutes {
 
   val client = MongoClient("localhost", 27017)
   val db = client("books")
@@ -30,42 +28,25 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
   def actorRefFactory = system
   def before = db.dropDatabase()
 
-  sequential
-
-  s"GET $staticUri" should {
-
-    "return OK" in {
-      Get(staticUri) ~> staticRoute ~> check {
-        response.status must equalTo(OK)
-      }
-    }
-
-    "return file content" in {
-      Get(staticUri) ~> staticRoute ~> check {
-        val content = responseAs[String]
-        content must equalTo("This is just a test")
-      }
-    }
-
-  }
+  def bookRegistryActor = TestProbe().ref
 
   s"GET $apiUri" should {
 
     "return OK" in {
-      Get(apiUri) ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
+      Get(apiUri) ~> bookRoutes ~> check {
+        response.status shouldBe OK
       }
     }
 
     "return all books" in {
       val expected = insertBooks(3).map { book =>
-        BookReduced(book._id, book.title, book.author)
+        BookReduced(book.id, book.title, book.author)
       }
-      Get(apiUri) ~> serviceRoute ~> check {
-        response.entity must not equalTo None
-        val books = responseAs[List[BookReduced]]
-        books must haveSize(expected.size)
-        books must equalTo(expected)
+      Get(apiUri) ~> bookRoutes ~> check {
+        response.entity should not be None
+        val books = responseAs[Seq[BookReduced]]
+        books should have size expected.size
+        books shouldBe expected
       }
     }
 
@@ -77,17 +58,17 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
 
     "return OK" in {
       insertBook(expected)
-      Get(s"$apiUri/_id/$bookId") ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
+      Get(s"$apiUri/_id/$bookId") ~> bookRoutes ~> check {
+        response.status shouldBe OK
       }
     }
 
     "return book" in {
       insertBook(expected)
-      Get(s"$apiUri/_id/$bookId") ~> serviceRoute ~> check {
-        response.entity must not equalTo None
+      Get(s"$apiUri/_id/$bookId") ~> bookRoutes ~> check {
+        response.entity should not be None
         val book = responseAs[Book]
-        book must equalTo(expected)
+        book shouldBe expected
       }
     }
 
@@ -98,33 +79,33 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
     val expected = Book(bookId, "PUT title", "Put author", "Put description")
 
     "return OK" in {
-      Put(apiUri, expected) ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
+      Put(apiUri, expected) ~> bookRoutes ~> check {
+        response.status shouldBe OK
       }
     }
 
     "return Book" in {
-      Put(apiUri, expected) ~> serviceRoute ~> check {
-        response.entity must not equalTo None
+      Put(apiUri, expected) ~> bookRoutes ~> check {
+        response.entity should not be None
         val book = responseAs[Book]
-        book must equalTo(expected)
+        book shouldBe expected
       }
     }
 
     "insert book to the DB" in {
-      Put(apiUri, expected) ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
+      Put(apiUri, expected) ~> bookRoutes ~> check {
+        response.status shouldBe OK
         val book = getBook(bookId)
-        book must equalTo(expected)
+        book shouldBe expected
       }
     }
 
     "update book when it exists in the DB" in {
       collection.insert(grater[Book].asDBObject(expected))
-      Put(apiUri, expected) ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
+      Put(apiUri, expected) ~> bookRoutes ~> check {
+        response.status shouldBe OK
         val book = getBook(bookId)
-        book must equalTo(expected)
+        book shouldBe expected
       }
     }
 
@@ -136,25 +117,16 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
 
     "return OK" in {
       insertBook(expected)
-      Delete(s"$apiUri/_id/$bookId") ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
-      }
-    }
-
-    "return book" in {
-      insertBook(expected)
-      Delete(s"$apiUri/_id/$bookId") ~> serviceRoute ~> check {
-        response.entity must not equalTo None
-        val book = responseAs[Book]
-        book must equalTo(expected)
+      Delete(s"$apiUri/_id/$bookId") ~> bookRoutes ~> check {
+        response.status shouldBe OK
       }
     }
 
     "remove book from the DB" in {
       insertBook(expected)
-      Delete(s"$apiUri/_id/$bookId") ~> serviceRoute ~> check {
-        response.status must equalTo(OK)
-        getBooks must haveSize(0)
+      Delete(s"$apiUri/_id/$bookId") ~> bookRoutes ~> check {
+        response.status shouldBe OK
+        getBooks should have size 0
       }
     }
 
@@ -164,7 +136,7 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
     collection.insert(grater[Book].asDBObject(book))
   }
 
-  def insertBooks(quantity: Int): List[Book] = {
+  def insertBooks(quantity: Int): Seq[Book] = {
     val books = List.tabulate(quantity)(id => Book(id, s"Title $id", s"Author $id", s"Description $id"))
     for (book <- books) {
       collection.insert(grater[Book].asDBObject(book))
@@ -177,8 +149,8 @@ class ServiceSpec extends Specification with Specs2RouteTest with HttpService wi
     grater[Book].asObject(dbObject.get)
   }
 
-  def getBooks: List[Book] = {
-    collection.find().toList.map(grater[Book].asObject(_))
+  def getBooks: Seq[Book] = {
+    collection.find().toSeq.map(grater[Book].asObject(_))
   }
 
 }
