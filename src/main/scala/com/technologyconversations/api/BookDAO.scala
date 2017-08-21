@@ -13,6 +13,8 @@ trait BookDAO {
 
   def createBook(book: Book): Option[Int]
 
+  def updateBook(book: Book): Option[Book]
+
   def deleteBook(id: Int): Boolean
 }
 
@@ -39,9 +41,17 @@ trait InMemoryBookDAOComponent extends BookDAOComponent {
       Some(nextId)
     }
 
+    def updateBook(book: Book): Option[Book] =
+      books.find(_.id == book.id).map { oldBook =>
+        books -= oldBook
+        books += book
+        book
+      }
+
     def deleteBook(id: Int): Boolean = {
       books.find(_.id == id) foreach { book => books -= book }
       true
     }
   }
+
 }
