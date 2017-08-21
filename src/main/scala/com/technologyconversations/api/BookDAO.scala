@@ -1,11 +1,5 @@
 package com.technologyconversations.api
 
-import com.mongodb.casbah.MongoConnection
-import salat._
-import salat.dao.SalatDAO
-
-import scala.util.Properties.envOrElse
-
 trait BookDAO {
   def allBooks(): Seq[BookReduced]
 
@@ -35,13 +29,15 @@ trait InMemoryBookDAOComponent extends BookDAOComponent {
 
     def createBook(book: Book): Option[Int] = {
       books += book.copy(id = nextId)
+      val result = Some(nextId)
       nextId += 1
-      Some(nextId)
+      result
     }
 
     def deleteBook(id: Int): Boolean = {
-      books.find(_.id == id) foreach { book => books -= book }
-      true
+      val maybeBook = books.find(_.id == id)
+      maybeBook foreach { book => books -= book }
+      maybeBook.isDefined
     }
   }
 }
