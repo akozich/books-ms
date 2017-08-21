@@ -1,16 +1,17 @@
 package com.technologyconversations.api
 
+import akka.actor.{ActorRef, ActorSystem}
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import akka.testkit.TestProbe
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
 import org.scalatest.{Matchers, WordSpec}
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.server._
 import salat._
 import salat.global._
-import Directives._
-import akka.testkit.TestProbe
+
+import scala.concurrent.ExecutionContext
 
 class ServiceSpec extends WordSpec 
   with Matchers 
@@ -25,10 +26,12 @@ class ServiceSpec extends WordSpec
   val staticUri = "/test.html"
   val bookId = 1234
 
-  def actorRefFactory = system
-  def before = db.dropDatabase()
+  def actorRefFactory: ActorSystem = system
+  def before(): Unit = db.dropDatabase()
 
-  def bookRegistryActor = TestProbe().ref
+  def bookRegistryActor: ActorRef = TestProbe().ref
+  def executionContext: ExecutionContext = system.dispatcher
+
 
   s"GET $apiUri" should {
 

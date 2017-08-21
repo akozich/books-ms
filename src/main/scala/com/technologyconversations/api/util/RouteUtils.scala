@@ -1,7 +1,6 @@
 package com.technologyconversations.api.util
 
-import akka.http.scaladsl.marshalling.{ ToResponseMarshallable, ToResponseMarshaller }
-import akka.http.scaladsl.model.{ StatusCode, StatusCodes }
+import akka.http.scaladsl.model.{StatusCode, StatusCodes}
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -10,11 +9,9 @@ import akka.http.scaladsl.server.directives.RouteDirectives
 import scala.concurrent.Future
 
 object RouteUtils {
-  def completeWithLocationHeader[T](
-    resourceId: Future[Option[T]],
-    ifDefinedStatus: StatusCode,
-    ifEmptyStatus: StatusCode
-  ): Route =
+  def completeWithLocationHeader[T](resourceId: Future[Option[T]],
+                                    ifDefinedStatus: StatusCode,
+                                    ifEmptyStatus: StatusCode): Route =
     onSuccess(resourceId) {
       case Some(t) => completeWithLocationHeader(ifDefinedStatus, t)
       case None => RouteDirectives.complete(ifEmptyStatus)
@@ -27,12 +24,6 @@ object RouteUtils {
       respondWithHeader(Location(location)) {
         RouteDirectives.complete(status)
       }
-    }
-
-  def complete[T: ToResponseMarshaller](resource: Future[Option[T]]): Route =
-    onSuccess(resource) {
-      case Some(t) => RouteDirectives.complete(ToResponseMarshallable(t))
-      case None => RouteDirectives.complete(StatusCodes.NotFound)
     }
 
   def complete(resource: Future[Unit]): Route = onSuccess(resource) {

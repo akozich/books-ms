@@ -1,11 +1,5 @@
 package com.technologyconversations.api
 
-import com.mongodb.casbah.MongoConnection
-import salat._
-import salat.dao.SalatDAO
-
-import scala.util.Properties.envOrElse
-
 trait BookDAO {
   def allBooks(): Seq[BookReduced]
 
@@ -15,7 +9,7 @@ trait BookDAO {
 
   def updateBook(book: Book): Option[Book]
 
-  def deleteBook(id: Int): Boolean
+  def deleteBook(id: Int): Unit
 }
 
 trait BookDAOComponent {
