@@ -48,10 +48,8 @@ trait InMemoryBookDAOComponent extends BookDAOComponent {
         book
       }
 
-    def deleteBook(id: Int): Boolean = {
+    def deleteBook(id: Int): Unit =
       books.find(_.id == id) foreach { book => books -= book }
-      true
-    }
   }
 
 }

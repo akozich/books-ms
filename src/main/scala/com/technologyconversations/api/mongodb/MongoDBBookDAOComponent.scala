@@ -35,8 +35,8 @@ trait MongoDBBookDAOComponent extends BookDAOComponent {
       if (result.wasAcknowledged()) Some(book) else None
     }
 
-    def deleteBook(id: Int): Boolean =
-      innerDao.removeById(id).wasAcknowledged()
+    def deleteBook(id: Int): Unit =
+      innerDao.removeById(id)
 
     private class InnerBookDAO extends SalatDAO[Book, Int](
       collection =
