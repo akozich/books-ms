@@ -155,30 +155,9 @@ class BookRegistryActorSpec(_system: ActorSystem)
     val bookRegistryActor = system.actorOf(BookRegistryActor.props(bookDao))
 
     bookRegistryActor.tell(BookRegistryActor.DeleteBook(bookId.get), probe.ref)
+    probe.receiveN(1, 500 millis)
 
-    val response = probe.expectMsgType[Boolean]
-    response shouldBe true
-  }
-
-  it should "not delete unknown book" in {
-    val probe = TestProbe()
-    val book = Book(
-      id = Int.MinValue,
-      title = "Scala in Action",
-      author = "Nilanjan Raychaudhuri",
-      description =
-        """Scala in Action is a comprehensive tutorial that introduces
-          |Scala through clear explanations and numerous hands-on examples.""".stripMargin
-    )
-    bookDao.createBook(book)
-
-    val bookRegistryActor = system.actorOf(BookRegistryActor.props(bookDao))
-
-    val invalidBookId = -1
-    bookRegistryActor.tell(BookRegistryActor.DeleteBook(invalidBookId), probe.ref)
-
-    val response = probe.expectMsgType[Boolean]
-    response shouldBe false
+    bookDao.findBook(bookId.get) shouldBe None
   }
 }
 
