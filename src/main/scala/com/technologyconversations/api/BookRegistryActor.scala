@@ -8,6 +8,8 @@ object BookRegistryActor {
 
   final case class CreateBook(book: Book)
 
+  final case class UpdateBook(book: Book)
+
   final case class GetBook(id: Int)
 
   final case class DeleteBook(id: Int)
@@ -24,6 +26,8 @@ class BookRegistryActor(bookDao: BookDAO) extends Actor with ActorLogging {
       sender() ! bookDao.allBooks()
     case CreateBook(book) =>
       sender() ! bookDao.createBook(book)
+    case UpdateBook(book) =>
+      sender() ! bookDao.updateBook(book)
     case GetBook(id) =>
       sender() ! bookDao.findBook(id)
     case DeleteBook(id) =>

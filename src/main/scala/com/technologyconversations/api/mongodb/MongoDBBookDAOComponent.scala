@@ -24,8 +24,19 @@ trait MongoDBBookDAOComponent extends BookDAOComponent {
     def createBook(book: Book): Option[Int] =
       innerDao.insert(book)
 
-    def deleteBook(id: Int): Boolean =
-      innerDao.removeById(id).wasAcknowledged()
+    def updateBook(book: Book): Option[Book] = {
+      val result = innerDao.update(
+        MongoDBObject("_id" -> book.id),
+        book,
+        upsert = false,
+        multi = false,
+        innerDao.defaultWriteConcern
+      )
+      if (result.wasAcknowledged()) Some(book) else None
+    }
+
+    def deleteBook(id: Int): Unit =
+      innerDao.removeById(id)
 
     private class InnerBookDAO extends SalatDAO[Book, Int](
       collection =

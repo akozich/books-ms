@@ -7,7 +7,9 @@ trait BookDAO {
 
   def createBook(book: Book): Option[Int]
 
-  def deleteBook(id: Int): Boolean
+  def updateBook(book: Book): Option[Book]
+
+  def deleteBook(id: Int): Unit
 }
 
 trait BookDAOComponent {
@@ -34,10 +36,15 @@ trait InMemoryBookDAOComponent extends BookDAOComponent {
       result
     }
 
-    def deleteBook(id: Int): Boolean = {
-      val maybeBook = books.find(_.id == id)
-      maybeBook foreach { book => books -= book }
-      maybeBook.isDefined
-    }
+    def updateBook(book: Book): Option[Book] =
+      books.find(_.id == book.id).map { oldBook =>
+        books -= oldBook
+        books += book
+        book
+      }
+
+    def deleteBook(id: Int): Unit =
+      books.find(_.id == id) foreach { book => books -= book }
   }
+
 }
