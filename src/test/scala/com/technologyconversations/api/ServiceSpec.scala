@@ -1,23 +1,23 @@
 package com.technologyconversations.api
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.testkit.TestProbe
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 import salat._
 import salat.global._
 
 import scala.concurrent.ExecutionContext
 
-class ServiceSpec extends WordSpec 
-  with Matchers 
-  with ScalatestRouteTest
-  with StaticRoute
-  with BookRoutes {
+class ServiceSpec extends WordSpec
+    with Matchers
+    with ScalatestRouteTest
+    with StaticRoute
+    with BookRoutes {
 
   val client = MongoClient("localhost", 27017)
   val db = client("books")
@@ -31,7 +31,6 @@ class ServiceSpec extends WordSpec
 
   def bookRegistryActor: ActorRef = TestProbe().ref
   def executionContext: ExecutionContext = system.dispatcher
-
 
   s"GET $apiUri" should {
 

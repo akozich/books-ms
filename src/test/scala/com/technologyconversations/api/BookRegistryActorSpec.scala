@@ -1,14 +1,14 @@
 package com.technologyconversations.api
 
 import akka.actor.ActorSystem
-import akka.testkit.{TestKit, TestProbe}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpecLike, Matchers}
+import akka.testkit.{ TestKit, TestProbe }
+import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll, FlatSpecLike, Matchers }
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
 class BookRegistryActorSpec(_system: ActorSystem)
-  extends TestKit(_system)
+    extends TestKit(_system)
     with Matchers
     with FlatSpecLike
     with BeforeAndAfter
@@ -160,5 +160,4 @@ class BookRegistryActorSpec(_system: ActorSystem)
     bookDao.findBook(bookId.get) shouldBe None
   }
 }
-
 

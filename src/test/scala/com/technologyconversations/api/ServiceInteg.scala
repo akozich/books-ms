@@ -1,6 +1,6 @@
 package com.technologyconversations.api
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 import scalaj.http._
 import scala.util.Properties._

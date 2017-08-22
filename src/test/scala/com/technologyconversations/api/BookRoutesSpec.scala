@@ -5,16 +5,15 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Route.seal
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.testkit.{TestActor, TestProbe}
+import akka.testkit.{ TestActor, TestProbe }
 import com.technologyconversations.api.BookRegistryActor._
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{ Matchers, WordSpecLike }
 
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
-
 class BookRoutesSpec
-  extends WordSpecLike
+    extends WordSpecLike
     with ScalatestRouteTest
     with BookRoutes
     with Matchers {
@@ -38,7 +37,8 @@ class BookRoutesSpec
 
     "return OK" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBooks ⇒ sender ! expected
+        case GetBooks ⇒
+          sender ! expected
           TestActor.NoAutoPilot
       })
 
@@ -49,7 +49,8 @@ class BookRoutesSpec
 
     "return all books" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBooks ⇒ sender ! expected
+        case GetBooks ⇒
+          sender ! expected
           TestActor.NoAutoPilot
       })
 
@@ -69,9 +70,11 @@ class BookRoutesSpec
 
     "return Created" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case CreateBook(`expected`) ⇒ sender ! Some(bookId)
+        case CreateBook(`expected`) ⇒
+          sender ! Some(bookId)
           TestActor.NoAutoPilot
-        case CreateBook(_) ⇒ sender ! None
+        case CreateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -82,9 +85,11 @@ class BookRoutesSpec
 
     "return new book url" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case CreateBook(`expected`) ⇒ sender ! Some(bookId)
+        case CreateBook(`expected`) ⇒
+          sender ! Some(bookId)
           TestActor.NoAutoPilot
-        case CreateBook(_) ⇒ sender ! None
+        case CreateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -102,9 +107,11 @@ class BookRoutesSpec
 
     "return OK" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBook(`bookId`) ⇒ sender ! Some(expected)
+        case GetBook(`bookId`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case GetBook(_) ⇒ sender ! None
+        case GetBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -115,9 +122,11 @@ class BookRoutesSpec
 
     "return book" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBook(`bookId`) ⇒ sender ! Some(expected)
+        case GetBook(`bookId`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case GetBook(_) ⇒ sender ! None
+        case GetBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -136,9 +145,11 @@ class BookRoutesSpec
 
     "return NotFound" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBook(`bookId`) ⇒ sender ! Some(expected)
+        case GetBook(`bookId`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case GetBook(_) ⇒ sender ! None
+        case GetBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -149,15 +160,17 @@ class BookRoutesSpec
 
     "return None" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case GetBook(`bookId`) ⇒ sender ! Some(expected)
+        case GetBook(`bookId`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case GetBook(_) ⇒ sender ! None
+        case GetBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
-//      Get(s"$apiUri/$invalidBookId") ~> seal(bookRoutes) ~> check {
-//        response.entity shouldBe None
-//      }
+      //      Get(s"$apiUri/$invalidBookId") ~> seal(bookRoutes) ~> check {
+      //        response.entity shouldBe None
+      //      }
     }
 
   }
@@ -168,9 +181,11 @@ class BookRoutesSpec
 
     "return OK" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case UpdateBook(`expected`) ⇒ sender ! Some(expected)
+        case UpdateBook(`expected`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case UpdateBook(_) ⇒ sender ! None
+        case UpdateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -181,9 +196,11 @@ class BookRoutesSpec
 
     "return book" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case UpdateBook(`expected`) ⇒ sender ! Some(expected)
+        case UpdateBook(`expected`) ⇒
+          sender ! Some(expected)
           TestActor.NoAutoPilot
-        case UpdateBook(_) ⇒ sender ! None
+        case UpdateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -202,7 +219,8 @@ class BookRoutesSpec
 
     "return NotFound" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case UpdateBook(_) ⇒ sender ! None
+        case UpdateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
@@ -213,13 +231,14 @@ class BookRoutesSpec
 
     "return None" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case UpdateBook(_) ⇒ sender ! None
+        case UpdateBook(_) ⇒
+          sender ! None
           TestActor.NoAutoPilot
       })
 
-//      Put(s"$apiUri/$invalidBookId", expected) ~> seal(bookRoutes) ~> check {
-//        response.entity shouldBe None
-//      }
+      //      Put(s"$apiUri/$invalidBookId", expected) ~> seal(bookRoutes) ~> check {
+      //        response.entity shouldBe None
+      //      }
     }
 
   }
@@ -228,7 +247,8 @@ class BookRoutesSpec
 
     "return NoContent" in {
       probe.setAutoPilot((sender: ActorRef, msg: Any) => msg match {
-        case DeleteBook(_) ⇒ sender ! Unit
+        case DeleteBook(_) ⇒
+          sender ! Unit
           TestActor.NoAutoPilot
       })
 

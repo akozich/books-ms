@@ -1,6 +1,6 @@
 package com.technologyconversations.api.util
 
-import akka.http.scaladsl.model.{StatusCode, StatusCodes}
+import akka.http.scaladsl.model.{ StatusCode, StatusCodes }
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -9,9 +9,11 @@ import akka.http.scaladsl.server.directives.RouteDirectives
 import scala.concurrent.Future
 
 object RouteUtils {
-  def completeWithLocationHeader[T](resourceId: Future[Option[T]],
-                                    ifDefinedStatus: StatusCode,
-                                    ifEmptyStatus: StatusCode): Route =
+  def completeWithLocationHeader[T](
+    resourceId: Future[Option[T]],
+    ifDefinedStatus: StatusCode,
+    ifEmptyStatus: StatusCode
+  ): Route =
     onSuccess(resourceId) {
       case Some(t) => completeWithLocationHeader(ifDefinedStatus, t)
       case None => RouteDirectives.complete(ifEmptyStatus)

@@ -2,12 +2,12 @@ package com.technologyconversations.api
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 class StaticRouteSpec extends WordSpec
-  with ScalatestRouteTest
-  with StaticRoute
-  with Matchers {
+    with ScalatestRouteTest
+    with StaticRoute
+    with Matchers {
 
   val staticUri = "/test.html"
 
